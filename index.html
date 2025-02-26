@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hard Math Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .containerX {
+            width: 60%;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+
+        .mysteryQ {
+            margin-bottom: 10px;
+            font-size: 22px;
+            color: yellow;
+        }
+
+        input {
+            margin-top: 5px;
+            padding: 5px;
+            width: 100px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="containerX">
+        <h2>Solve This for Access</h2>
+        <div id="puzzleZone"></div>
+        <button onclick="jumpNext()">Next</button>
+        <h3 id="msgBox"></h3>
+    </div>
+
+    <script>
+        let qIndex = 0;
+        let qList = [];
+
+        function randomTask() {
+            let a = Math.floor(Math.random() * 900) + 100;
+            let b = Math.floor(Math.random() * 90) + 10;
+            let c = Math.floor(Math.random() * 20) + 2;
+            let d = Math.floor(Math.random() * 50) + 1;
+            let ops = ['+', '-', '*', '/', '%'];
+
+            let op1 = ops[Math.floor(Math.random() * ops.length)];
+            let op2 = ops[Math.floor(Math.random() * ops.length)];
+
+            let equation;
+            let solution;
+
+            switch (op1) {
+                case '+':
+                    equation = `(${a} + ${b}) ${op2} ${c}`;
+                    solution = eval(`${a} + ${b}`);
+                    break;
+                case '-':
+                    equation = `(${a} - ${b}) ${op2} ${c}`;
+                    solution = eval(`${a} - ${b}`);
+                    break;
+                case '*':
+                    equation = `(${a} × ${b}) ${op2} ${c}`;
+                    solution = eval(`${a} * ${b}`);
+                    break;
+                case '/':
+                    a = b * c;
+                    equation = `(${a} ÷ ${b}) ${op2} ${c}`;
+                    solution = eval(`${a} / ${b}`);
+                    break;
+                case '%':
+                    a = b * c + d;
+                    equation = `(${a} % ${b}) ${op2} ${c}`;
+                    solution = eval(`${a} % ${b}`);
+                    break;
+            }
+
+            switch (op2) {
+                case '+':
+                    equation += ` + ${d}`;
+                    solution += d;
+                    break;
+                case '-':
+                    equation += ` - ${d}`;
+                    solution -= d;
+                    break;
+                case '*':
+                    equation += ` × ${d}`;
+                    solution *= d;
+                    break;
+                case '/':
+                    d = Math.max(1, d);
+                    equation += ` ÷ ${d}`;
+                    solution /= d;
+                    break;
+                case '%':
+                    d = Math.max(1, d);
+                    equation += ` % ${d}`;
+                    solution %= d;
+                    break;
+            }
+
+            return { equation, solution: solution.toString() };
+        }
+
+        function buildTasks() {
+            qList = [];
+            for (let i = 0; i < 10; i++) {
+                qList.push(randomTask());
+            }
+        }
+
+        function displayTask() {
+            if (qIndex >= qList.length) {
+                mathematics();
+                return;
+            }
+
+            const qArea = document.getElementById('puzzleZone');
+            qArea.innerHTML = '';
+
+            let qText = qList[qIndex].equation;
+            let qHTML = `<div class="mysteryQ">${qIndex + 1}. ${qText}</div>`;
+            qHTML += `<input type="text" id="userAttempt" placeholder="?">`;
+            qArea.innerHTML = qHTML;
+        }
+
+        function jumpNext() {
+            const inputAns = document.getElementById('userAttempt').value.trim();
+            if (inputAns !== qList[qIndex].solution) {
+                resetGame();
+                return;
+            }
+            qIndex++;
+            displayTask();
+        }
+
+        function mathematics() {
+            let gtTwelve = "SnVzdGluIFJvaWxhbmQ=";
+            let rndoutput = atob(gtTwelve);
+            document.getElementById('puzzleZone').innerHTML = '';
+            document.getElementById('msgBox').innerText = `Code: ${rndoutput}`;
+        }
+
+        function resetGame() {
+            qIndex = 0;
+            document.getElementById('msgBox').innerText = "Wrong! Restarting...";
+            setTimeout(() => {
+                document.getElementById('msgBox').innerText = "";
+                buildTasks();
+                displayTask();
+            }, 2000);
+        }
+
+        buildTasks();
+        displayTask();
+    </script>
+</body>
+
+</html>
